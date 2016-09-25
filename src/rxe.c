@@ -400,13 +400,13 @@ static int rxe_post_one_recv(struct rxe_wq *rq, struct ibv_recv_wr *recv_wr)
 		goto out;
 	}
 
-	wqe = (struct rxe_recv_wqe *)producer_addr(q);
+	wqe = producer_addr(q);
 
 	wqe->wr_id = recv_wr->wr_id;
 	wqe->num_sge = recv_wr->num_sge;
 
 	memcpy(wqe->dma.sge, recv_wr->sg_list,
-	       wqe->num_sge*sizeof(*wqe->dma.sge));
+	       wqe->num_sge * sizeof(*wqe->dma.sge));
 
 	for (i = 0; i < wqe->num_sge; i++) {
 		length += wqe->dma.sge[i].length;
@@ -624,7 +624,7 @@ int init_send_wqe(struct rxe_qp *qp, struct rxe_wq *sq,
 		}
 	} else
 		memcpy(wqe->dma.sge, ibwr->sg_list,
-		       num_sge*sizeof(struct ibv_sge));
+		       num_sge * sizeof(struct ibv_sge));
 
 	if ((opcode == IBV_WR_ATOMIC_CMP_AND_SWP)
 	    || (opcode == IBV_WR_ATOMIC_FETCH_AND_ADD))
@@ -659,7 +659,7 @@ static int post_one_send(struct rxe_qp *qp, struct rxe_wq *sq,
 		return err;
 	}
 
-	wqe = (struct rxe_send_wqe *)producer_addr(sq->queue);
+	wqe = producer_addr(sq->queue);
 
 	err = init_send_wqe(qp, sq, ibwr, length, wqe);
 	if (err)
@@ -674,7 +674,7 @@ static int post_one_send(struct rxe_qp *qp, struct rxe_wq *sq,
 }
 
 /* send a null post send as a doorbell */
-int post_send_db(struct ibv_qp *ibqp)
+static int post_send_db(struct ibv_qp *ibqp)
 {
 	struct ibv_post_send cmd;
 	struct ibv_post_send_resp resp;
